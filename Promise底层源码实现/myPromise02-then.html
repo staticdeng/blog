@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Promise</title>
+</head>
+<body>
+    <script src="./myPromise02-then.js"></script>
+    <script>
+        function test(){
+            console.log('MyPromise start')
+            return new MyPromise(function(resolve){
+                // setTimeout(function(){
+                    resolve('ResolveMethod')
+                // }, 2000)
+            })
+        }
+        function test2(){
+            console.log('MyPromise2 start')
+            return new MyPromise(function(resolve){
+                // setTimeout(function(){
+                    resolve('ResolveMethod2')
+                // }, 2000)
+            })
+        }
+
+        test().then(function(options1){
+            console.log('MyPromise end')
+            console.log(options1)
+            return test2()
+        }).then(function(options2){
+            console.log('MyPromise2 end')
+            console.log(options2)
+        })
+    </script>
+</body>
+</html>

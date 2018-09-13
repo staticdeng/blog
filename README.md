@@ -1,16 +1,28 @@
 # frontend-blog
 
-这是一个前端博客github，对于每个前端开发者来说，前端零碎的知识点肯定是个很头疼的问题，所以我把平时的前端知识点慢慢积累下来。这些知识点有的会结合实战，有的会给出给出文档详解，希望能够将前端知识点积少成多。
+前端博客，不定时更新，欢迎star
 
-## 组件篇
+# js
 
-> 如何用jq写一个面向对象的组件
+  * [TypeScript](https://github.com/dzfrontend/start-with-typescript)  
 
-<https://github.com/dzfrontend/dialog-jq>
+# react相关
 
-## ES6系列
+  * [分析vue-cli 2.x源码实现一个前端模板脚手架工具](https://github.com/dzfrontend/command-tool)  
 
-> Promise底层源码实现
+  * [做一个自己的react脚手架](https://github.com/dzfrontend/react-cli)
+
+# ES6系列
+
+  * [Promise底层源码一步步实现](https://github.com/dzfrontend/frontend-blog/tree/master/Promise%E5%BA%95%E5%B1%82%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0)  
+
+# 组件篇
+
+  * [jq写一个面向对象的组件](https://github.com/dzfrontend/dialog-jq)  
+
+
+
+
 
 
 

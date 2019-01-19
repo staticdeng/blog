@@ -18,7 +18,7 @@
 
   * vue原理解析
   
-    * [从Object.defineProperty看vue响应式数据绑定最简单的实现](./Object.defineProperty/响应式数据绑定.md)
+    * [从Object.defineProperty看vue响应式数据绑定最简单的实现](./Vue/Object.defineProperty/响应式数据绑定.md)
 
 # ES6系列
 

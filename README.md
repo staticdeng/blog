@@ -10,9 +10,15 @@
 
 # react相关
 
+  * [react环境全面配置](https://github.com/dzfrontend/react-cli)
+
+# Vue相关
+
   * [分析vue-cli 2.x源码实现一个前端模板脚手架工具](https://github.com/dzfrontend/command-tool)  
 
-  * [react环境全面配置](https://github.com/dzfrontend/react-cli)
+  * vue原理解析
+  
+    * [从Object.defineProperty看vue响应式数据绑定最简单的实现](./Object.defineProperty/响应式数据绑定.md)
 
 # ES6系列
 

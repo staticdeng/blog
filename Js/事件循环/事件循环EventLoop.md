@@ -40,7 +40,7 @@ JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，J
 
 下图是主线程和任务队列的示意图：
 
-<img src="http://pjizbyw69.bkt.clouddn.com/eventloop01.png"/>
+<img src="./img/eventloop01.png"/>
 
 ## 宏任务和微任务
 
@@ -52,7 +52,7 @@ JavaScript的单线程，与它的用途有关。作为浏览器脚本语言，J
 
 如果宏任务在本轮Event Loop中执行，则微任务在本轮Event Loop的所有宏任务结束后执行（Event Loop下面会讲到）。下面为宏任务和微任务的执行示意图：  
 
-<img src="http://pjizbyw69.bkt.clouddn.com/eventloop02.png"/>
+<img src="./img/eventloop02.png"/>
 
 ## Event Loop
 

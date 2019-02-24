@@ -8,13 +8,13 @@
 
     * [函数防抖(debounce)和节流(throttle)](./Optimization/函数防抖和节流/README.md)
 
-# js
+# JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)
   
 * [彻底弄懂事件循环EventLoop](./Js/事件循环/事件循环EventLoop.md)  
 
-# react相关
+# React相关
 
 * [react环境全面配置](https://github.com/dzfrontend/react-cli)
 

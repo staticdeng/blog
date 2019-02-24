@@ -163,7 +163,7 @@ document.onmousemove = function (e) {
 * 谷歌搜索框，搜索联想功能
 * 高频点击提交，表单重复提交
 
-文档中出现的源代码都在这里: [防抖](./Optimization/函数防抖和节流/debounce.js)、[节流](./Optimization/函数防抖和节流/throttle.js)
+文档中出现的源代码都在这里: [防抖](./debounce.js)、[节流](./throttle.js)
 
 参考资料：
 

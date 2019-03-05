@@ -28,7 +28,7 @@
 
 # ES6系列
 
-* [Promise底层源码一步步实现](https://github.com/dzfrontend/frontend-blog/tree/master/Promise%E5%BA%95%E5%B1%82%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0)  
+* [Promise底层源码一步步实现](./ES6/PromiseSource/)  
 
 # 组件篇
 

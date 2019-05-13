@@ -12,7 +12,11 @@
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)
   
-* [彻底弄懂事件循环EventLoop](./Js/事件循环/事件循环EventLoop.md)  
+* [彻底弄懂事件循环EventLoop](./Js/事件循环/事件循环EventLoop.md) 
+
+* js手写代码
+
+    * [Javascript深浅拷贝](./Js/Javascript深浅拷贝/README.md)
 
 # React相关
 

@@ -8,6 +8,10 @@
 
     * [函数防抖(debounce)和节流(throttle)](./Optimization/函数防抖和节流/README.md)
 
+* 前端性能优化专题
+
+    * [前端性能优化专题之从浏览器请求过程看前端性能优化](./Optimization/前端性能优化专题/1.浏览器请求过程/README.md)
+
 # JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)

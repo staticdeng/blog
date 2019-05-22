@@ -12,6 +12,8 @@
 
     * [前端性能优化专题之从浏览器请求过程看前端性能优化](./Optimization/前端性能优化专题/1.浏览器请求过程/README.md)
 
+    * [前端性能优化专题之懒加载和预加载](./Optimization/前端性能优化专题/2.懒加载和预加载/README.md)
+
 # JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)

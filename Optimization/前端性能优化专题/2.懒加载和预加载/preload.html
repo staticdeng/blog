@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        var xmlhttprequest = new XMLHttpRequest();
+        xmlhttprequest.onreadystatechange = callback;
+        xmlhttprequest.onprogress = progressCallback;
+        xmlhttprequest.open("GET", "http://image.baidu.com/mouse,jpg", true);
+        xmlhttprequest.send();
+        function callback() {
+            if (xmlhttprequest.readyState == 4 && xmlhttprequest.status == 200) {
+                var responseText = xmlhttprequest.responseText;
+            } else {
+                console.log("Request was unsuccessful:" + xmlhttprequest.status);
+            }
+        }
+        function progressCallback(e) {
+            e = e || event;
+            if (e.lengthComputable) {
+                console.log("Received" + e.loaded + "of" + e.total + "bytes")
+            }
+        }    
+    </script>
+</body>
+
+</html>

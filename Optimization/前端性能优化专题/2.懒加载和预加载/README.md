@@ -79,13 +79,15 @@ document.addEventListener('scroll', lazyload)
 
 * 使用HTML标签，将需要预加载的图片通过img标签加载并隐藏，使用的时候就直接从缓存里面读取
 
-<img src="http://pic26.nipic.com/20121213/6168183 0044449030002.jpg" style="display:none"/>
+```html
+<img src="http://pic26.nipic.com/20121213/61681830044449030002.jpg" style="display:none"/>
+```
 
 * 使用Image对象
 
 ```js
 var image= new Image()
-image.src="http://pic26.nipic.com/20121213/6168183 004444903000 2.jpg"
+image.src="http://pic26.nipic.com/20121213/61681830044449030002.jpg"
 ```
 
 * 使用XMLHttpRequest对象，存在跨域问题需要解决跨域，但会精细控制预加载过程，如可以获取加载进度

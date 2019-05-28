@@ -16,7 +16,6 @@
 
 回流在页面布局发生变化的同时，也会触发外观重新变化，所以**回流一定会引起重绘，而重绘不一定会引起回流**。
 
-
 ## 重绘和回流css属性
 
 触发页面重新布局的属性：
@@ -53,5 +52,28 @@ color border-radius visibility background outline box-shadow
 
 在chrome浏览器的调试模式下，勾选DevTools--More tools--Layers，在手淘页面下，就可以看到很多layers，这就是图层。
  
+所以，可以通过下面的方式来进行重绘和回流的性能优化：
 
+* 用translate代替top改变
 
+* 用opacity代替visibility
+
+* 不要一条一条地修改dom的样式，预先定义好class，然后修改dom的className
+
+* 把dom离线后修改
+
+* 不要把dom节点的属性值放到一个循环里当成循环里的变量
+
+* 不要使用table布局，可能很小的一个小改动会造成整个table的重新布局
+
+* 动画实现的速度的选择
+
+* 对于动画新建图层
+
+* 启用GPU硬件加速
+
+参考文档：
+
+[你真的了解回流和重绘吗-腾讯IVWEB团队](https://juejin.im/post/5c6cb7b4f265da2dae511a3d)
+
+[渲染机制及重绘和回流](https://juejin.im/post/5c6c182ee51d45760b1c8e30)

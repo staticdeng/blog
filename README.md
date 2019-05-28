@@ -16,6 +16,8 @@
 
     * [前端性能优化专题之重绘和回流](./Optimization/前端性能优化专题/3.重绘和回流/README.md)
 
+    * [前端性能优化专题之缓存优化](https://github.com/ljianshu/Blog/issues/23)
+
 # JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)

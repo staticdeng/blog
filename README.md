@@ -24,15 +24,15 @@
   
 * [彻底弄懂事件循环EventLoop](./Js/事件循环/事件循环EventLoop.md) 
 
-* js手写代码
+* js源码
 
     * [Javascript深浅拷贝](./Js/Javascript深浅拷贝/README.md)
 
-# React相关
+# React系列
 
 * [react环境全面配置](https://github.com/dzfrontend/react-cli)
 
-# Vue相关
+# Vue系列
 
 * [分析vue-cli 2.x源码实现一个前端模板脚手架工具](https://github.com/dzfrontend/command-tool)    
 
@@ -42,18 +42,23 @@
 
 # ES6系列
 
-* [Promise底层源码一步步实现](./ES6/PromiseSource/)  
+* [Promise底层源码一步步实现](./ES6/PromiseSource/) 
+
+# Webpack系列
+
+# 算法篇
 
 # 组件篇
 
-* [jq写一个面向对象的组件](https://github.com/dzfrontend/dialog-jq)  
+* [rollup配置打包vue组件库并发布到npm](./Vue/vue组件库/rollup配置打包vue组件库并发布到npm.md) 
 
+# 网络篇
 
+* HTTP
 
+# 其他
 
+* 模块化
 
-
-
-
-
+    * [可能是最详细的UMD模块入门指南](https://blog.csdn.net/weixin_41196185/article/details/100136407)
 

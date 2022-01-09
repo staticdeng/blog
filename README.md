@@ -18,6 +18,10 @@
 
     * [前端性能优化专题之缓存优化](https://github.com/ljianshu/Blog/issues/23)
 
+* 前端性能优化
+
+    * [前端性能优化(1)-使用Lighthouse建立性能优化的量化指标](./Optimization/前端性能优化/前端性能优化(1)-使用Lighthouse建立性能优化的量化指标.md)
+
 # JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)
@@ -29,8 +33,6 @@
     * [Javascript深浅拷贝](./Js/Javascript深浅拷贝/README.md)
 
 # React系列
-
-* [react环境全面配置](https://github.com/dzfrontend/react-cli)
 
 # Vue系列
 

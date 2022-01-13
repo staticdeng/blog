@@ -119,7 +119,11 @@ window.addEventListener('load', (event) => {
 更多API可查看官方文档。
 
 参考链接(Tanks):
+
 [如何使用Lighthouse性能检测工具](https://juejin.cn/post/6950855971379871757)
+
 [使用 Performance API 获取页面性能](https://juejin.cn/post/6973567030528065573)
+
 [前端性能优化指标 + 检测工具](https://juejin.cn/post/6974565176427151397#heading-0)
+
 [web性能优化（Lighthouse和performance）：从实际项目入手，如何监测性能问题、如何解决](https://juejin.cn/post/6965744691979485197)

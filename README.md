@@ -22,6 +22,8 @@
 
     * [前端性能优化(1)-使用Lighthouse建立性能优化的量化指标](./Optimization/前端性能优化/前端性能优化(1)-使用Lighthouse建立性能优化的量化指标.md)
 
+    * [前端性能优化(2)-从浏览器的渲染机制看性能优化](./Optimization/前端性能优化(2)-从浏览器的渲染机制看性能优化.md)
+
 # JavaScript
 
 * [TypeScript入门](https://github.com/dzfrontend/start-with-typescript)

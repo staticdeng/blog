@@ -1,0 +1,10 @@
+body {
+    background-color: green;
+}
+
+#bar {
+    width: 100px;
+    height: 50px;
+    background-color: brown;
+    transform: rotate(45deg);
+}

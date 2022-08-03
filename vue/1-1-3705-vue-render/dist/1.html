@@ -15,9 +15,19 @@
     const vm = new Vue({
       data: {
         name: 'xiaoming',
-        age: 20,
+        address: {
+          num: 30,
+        },
       }
     });
+
+    vm._data.name = 'xiaohu'; // 数据代理，下面直接vm.name
+    vm.name = 'xiaohu'; // 修改触发set
+    // 设置值为新的Object也要进行新Object的劫持
+    vm.address = {
+      num: 20
+    }
+    console.log(vm); // 查看控制台，所有属性都被监听劫持有get和set
   </script>
 </body>
 

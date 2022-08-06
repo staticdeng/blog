@@ -1,4 +1,4 @@
-# vue响应式数据变化和模板编译原理
+# vue响应式数据变化原理
 
 ## 1. 初始化state
 
@@ -201,7 +201,7 @@ export function observe(data) {
 
 测试验证：
 
-dist/1.html
+dist/index.html
 
 ```html
 <script>
@@ -225,4 +225,129 @@ console.log(vm); // 查看控制台，所有属性都被监听劫持有get和set
 ```
 
 ### 2.2 数组方法的劫持
+
+```html
+<script>
+  const vm = new Vue({
+    data: {
+      arr: [1, 2, 3],
+    }
+  });
+  console.log(vm.arr);
+</script>
+```
+
+如果还是按照劫持对象的方式来劫持数组的每一项，数组arr的每一项都被劫持会浪费性能，但是修改数组却很少用索引来操作数组；
+
+修改数组都是通过方法来修改，push shift...等，所以需要重写数组上的方法，在重写的数组方法里对新增的数据进行劫持。
+
+src/core/observer/index.js
+
+```js
++import { newArrayProto } from './array';
+
+// 劫持类
+class Observer {
+  constructor(data) {
+    // data.__ob__ = this; // 这样写可枚举遍历到，会递归this可不行，需要设置为不可枚举
+    // data.__ob__ = this 作用1.给数据加了一个标识，如果数据上有__ob__ 则说明这个属性被观测过了
+    // data.__ob__ = this 作用2.在data.__ob__上挂载Observer的实例，可以供newArrayProto里面取observeArray方法
+
+    // data.__ob__ = this改写为：
++   Object.defineProperty(data, '__ob__', {
++     value: this,
++     enumerable: false // 将__ob__ 变成不可枚举 （循环的时候无法获取到）
++   });
+
+    // 数组劫持
++   if (Array.isArray(data)) {
++     // 在数据的实例原型上重写数组的部分方法，并且保留数组原有的特性
++     data.__proto__ = newArrayProto;
++     // 不用劫持数组的每一项，只用劫持数组中的对象
++     this.observeArray(data);
++   } else {
+      // 对象属性劫持
+      this.walk(data);
+    }
+  }
+  // 遍历对象，对属性依次劫持
+  walk(data) {
+    // "重新定义"所有的属性，在vue2中性能差
+    Object.keys(data).forEach(key => defineRective(data, key, data[key]));
+  }
+  // 劫持数组中的对象
++ observeArray(data) {
++   data.forEach(v => observe(v));
++ }
+}
+
+
+// 属性劫持(重新定义对象属性为响应式)
+// Object.defineProperty只能劫持已经存在的属性，后增的或者删除的属性不会监听到（vue2里面会为此单独写一些api，如$set $delete）
+function defineRective(target, key, value) { // value一直被使用，闭包
+  ....
+}
+
+// 劫持入口
+export function observe(data) {
+  // 只对对象进行劫持
+  if (typeof data !== 'object' || data === null) return;
+
++ // 如果一个对象被劫持过了，那就不需要再被劫持了 (要判断一个对象是否被劫持过，可以增添一个实例，用实例来判断是否被劫持过)
++ if (data.__ob__ instanceof Observer) {
++   return data.__ob__;
++ }
+
+  return new Observer(data);
+}
+```
+
+重写数组的部分方法，并且保留数组原有的特性：
+
+src/core/observer/array.js
+
+```js
+let oldArrayProto = Array.prototype; // 获取数组的原型
+
+// 不要直接重写Array.prototype.push，否则会影响原生Array的push
+export const newArrayProto = Object.create(oldArrayProto); // 拷贝一份，不影响数组原型上的方法
+// 等价于newArrayProto.__proto__  = oldArrayProto
+
+let methods = [ // 找到所有的变异方法
+  'push',
+  'pop',
+  'shift',
+  'unshift',
+  'reverse',
+  'sort',
+  'splice'
+] // concat slice 都不会改变原数组
+
+methods.forEach(method => {
+  newArrayProto[method] = function (...args) { // 重写了数组的方法
+    const result = oldArrayProto[method].call(this, ...args); // 内部调用原来的方法，函数的劫持
+    // 需要对新增的数据再次进行劫持
+    let inserted;
+    let ob = this.__ob__;
+    switch (method) {
+      case 'push':
+      case 'unshift': // arr.unshift(1,2,3)
+        inserted = args;
+        break;
+      case 'splice':  // arr.splice(0,1,{a:1},{a:1})
+        inserted = args.slice(2);
+      default:
+        break;
+    }
+    console.log('array inserted', inserted); // 新增的内容
+    if(inserted) {
+      // 对新增的内容再次进行观测  
+      ob.observeArray(inserted);
+    }
+    return result;
+  }
+})
+```
+
+至此，实现了数组的方法劫持
 

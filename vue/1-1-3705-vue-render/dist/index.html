@@ -18,6 +18,7 @@
         address: {
           num: 30,
         },
+        arr: [1, { a: 1 }],
       }
     });
 
@@ -27,6 +28,10 @@
     vm.address = {
       num: 20
     }
+
+    // 修改数组都是通过方法来修改，push shift...
+    vm.arr.push({ a: 2 }); // push新增的内容再次进行观测
+
     console.log(vm); // 查看控制台，所有属性都被监听劫持有get和set
   </script>
 </body>

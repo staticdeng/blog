@@ -11,7 +11,7 @@
 <body>
   <div id="app" style="color:red;background:yellow">
     <div style="color:green" key="123">
-      {{ name }} hello {{age}} hello {{(function(){ return age})()}}
+      {{ name }} hello {{age}}
     </div>
     <li> world </li>
   </div>
@@ -21,10 +21,6 @@
       data: {
         name: 'xiaoming',
         age: 20,
-        address: {
-          num: 30,
-        },
-        arr: [1, { a: 1 }],
       },
       // template:'<div>hello</div>'
       el: '#app', // 将数据解析到el元素上

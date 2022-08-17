@@ -284,6 +284,141 @@ export function parseHTML(html) { // html最开始肯定是一个  </div>
 
 ## 3. ast语法树生成模板引擎/render函数 (代码生成)
 
+ast语法树里面还有 `{{}}` 里的数据需要解析，也就是转成render函数，供后面生成虚拟dom使用
+
+将ast语法树生成代码(render函数):
+
+src/compiler/codegen/index.js
+
+```js
+function genProps(attrs) {
+  let str = '' // {name,value}
+  for (let i = 0; i < attrs.length; i++) {
+    let attr = attrs[i];
+    if (attr.name === 'style') {
+      // color:red;background:red => {color:'red'}
+      let obj = {};
+      attr.value.split(';').forEach(item => { // qs 库
+        let [key, value] = item.split(':');
+        obj[key] = value;
+      });
+      attr.value = obj
+    }
+    str += `${attr.name}:${JSON.stringify(attr.value)},` // a:b,c:d,
+  }
+  return `{${str.slice(0, -1)}}`
+}
+
+const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; // {{ asdsadsa }}  匹配到的内容就是我们表达式的变量
+function gen(node) {
+  if (node.type === 1) {
+    return codegen(node);
+  } else {
+    // 文本
+    let text = node.text
+    if (!defaultTagRE.test(text)) {
+      return `_v(${JSON.stringify(text)})`
+    } else {
+      //_v( _s(name)+'hello' + _s(name))
+      let tokens = [];
+      let match;
+      defaultTagRE.lastIndex = 0;
+      let lastIndex = 0;
+      // split
+      while (match = defaultTagRE.exec(text)) {
+        let index = match.index; // 匹配的位置  {{name}} hello  {{name}} hello 
+        if (index > lastIndex) {
+          tokens.push(JSON.stringify(text.slice(lastIndex, index)))
+        }
+        tokens.push(`_s(${match[1].trim()})`)
+        lastIndex = index + match[0].length
+      }
+      if (lastIndex < text.length) {
+        tokens.push(JSON.stringify(text.slice(lastIndex)))
+      }
+      return `_v(${tokens.join('+')})`
+    }
+  }
+}
+
+function genChildren(children) {
+  return children.map(child => gen(child)).join(',')
+}
+
+function codegen(ast) {
+  let children = genChildren(ast.children);
+  let code = (`_c('${ast.tag}',${ast.attrs.length > 0 ? genProps(ast.attrs) : 'null'
+      }${ast.children.length ? `,${children}` : ''
+      })`);
+  return code;
+}
+
+export function generate(ast) {
+  const state = codegen(ast);
+  return state;
+}
+```
+
+调用generate：
+
+src/compiler/index.js
+
+```js
+import { parse } from './parser/index';
++import { generate } from './codegen/index';
+
+export function compileToFunctions(template) {
+  // 1. 转换 template 为 ast 语法树
+  const ast = parse(template.trim());
+  console.log('ast', ast);
+
+  // 2.生成render方法 (render方法执行后的返回的结果就是 虚拟DOM)
++ let code = generate(ast);
+  //  _c('div',{id:'app'},_c('div',{style:{color:'red'}}, _v(_s(vm.name)+'hello'),_c('span',undefined,  _v(_s(age))))
+  // 模板引擎的实现原理 就是 with  + new Function
++ code = `with(this){return ${code}}`;
++ let render = new Function(code); // 根据代码生成render函数
+  console.log('render', render);
++ return render;
+}
+```
+
+使用下面模板：
+
+```html
+<div id="app" style="color:red;background:yellow">
+  <div style="color:green" key="123">
+    {{ name }} hello {{age}}
+  </div>
+  <li> world </li>
+</div>
+<script src="vue.js"></script>
+<script>
+  const vm = new Vue({
+    data: {
+      name: 'xiaoming',
+      age: 20,
+    },
+    el: '#app', // 将数据解析到el元素上
+  });
+</script>
+```
+
+最后render函数为：
+
+```js
+(function anonymous(
+) {
+with(this){return _c('div',{id:"app",style:{"color":"red","background":"yellow"}},_v("     "),_c('div',{style:{"color":"green"},key:"123"},_v("       "+_s(name)+" hello "+_s(age)+"     ")),_v("     "),_c('li',null,_v(" world ")),_v("   "))}
+})
+```
+
+可以发现 _c 函数第一个参数为tag, 第二个参数为props, 第三个为...children; 
+
+* _c 函数用来生成元素
+* _v 函数用来生成文本
+* _s 函数用来生成数据
+
 ## 4. render函数转为虚拟dom
 
 ## 5. 虚拟dom转为真实dom

@@ -7,6 +7,7 @@
 
 import Vue from 'core/index';
 import { compileToFunctions } from 'compiler/index';
+import { mountComponent } from 'core/instance/lifecycle';
 
 // $mount实现挂载
 Vue.prototype.$mount = function (el) {
@@ -29,5 +30,7 @@ Vue.prototype.$mount = function (el) {
       options.render = render; // jsx 最终会被编译成h('xxx')
     }
   }
+
+  mountComponent(vm, el); // 组件的挂载
 }
 export default Vue;

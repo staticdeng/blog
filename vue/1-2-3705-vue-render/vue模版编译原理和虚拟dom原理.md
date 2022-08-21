@@ -421,4 +421,255 @@ with(this){return _c('div',{id:"app",style:{"color":"red","background":"yellow"}
 
 ## 4. render函数转为虚拟dom
 
+在render函数生成后，就需要转为虚拟dom，进行dom diff后生成真实dom。
+
+#### 4.1 初始化lifecycleMixin和renderMixin
+
+调用mountComponent挂载：
+
+```js
+import Vue from 'core/index';
+import { compileToFunctions } from 'compiler/index';
++import { mountComponent } from 'core/instance/lifecycle';
+
+// $mount实现挂载
+Vue.prototype.$mount = function (el) {
+  ...
+    if (template) {
+      // 对模板进行编译 
+      const render = compileToFunctions(template);
+      options.render = render; // jsx 最终会被编译成h('xxx')
+    }
+  ...
+
++  mountComponent(vm, el); // 组件的挂载
+}
+export default Vue;
+```
+
+mountComponent 需要调用`vm._render()`方法产生虚拟节点虚拟DOM，`vm._update` 虚拟DOM产生真实DOM插入el元素中：
+
+src/core/instance/lifecycle.js
+
+```js
+export function mountComponent(vm, el) { // 这里的el是通过querySelector处理过的
+  vm.$el = el;
+
+  // 1.调用render方法产生虚拟节点虚拟DOM
+  // 2.根据虚拟DOM产生真实DOM，插入el元素中
+  vm._update(vm._render()); // vm.$options.render() 虚拟节点
+}
+```
+
+需要两个实例方法vm._update和vm._render()，分别写在lifecycleMixin和renderMixin中：
+
+在初始化时调用 lifecycleMixin 和 renderMixin:
+
+src/core/instance/index.js
+
+```js
+import { initMixin } from './init';
++ import { lifecycleMixin } from './lifecycle';
++ import { renderMixin } from './render';
+
+// 避免将所有的方法都耦合在一起，使用构造函数的方式，不使用类的方式
+function Vue(options) { 
+  // options就是用户的选项
+  this._init(options); // 默认就调用了init
+}
+
+initMixin(Vue);
++ lifecycleMixin(Vue);
++ renderMixin(Vue);
+
+export default Vue;
+```
+
+#### 4.2 vm._render 生成虚拟dom
+
+在renderMixin中定义vm._render:
+
+src/core/instance/render.js
+
+```js
+import { createElementVNode, createTextVNode } from '../vdom/vnode';
+
+export function renderMixin(Vue) {
+  Vue.prototype._render = function () {
+    const { render } = this.$options;
+
+    // 当渲染的时候会去实例中取值，我们就可以将属性和视图绑定在一起
+    const vnode = render.call(this);
+    return vnode;
+  }
+
+  // _c('div',{},...children)
+  Vue.prototype._c = function () {
+    return createElementVNode(this, ...arguments)
+  }
+  // _v(text)
+  Vue.prototype._v = function () {
+    return createTextVNode(this, ...arguments)
+  }
+  Vue.prototype._s = function (value) {
+    if (typeof value !== 'object') return value
+    return JSON.stringify(value)
+  }
+};
+```
+
+在vnode.js中，转换vnode:
+
+src/core/vdom/vnode.js
+
+```js
+// h()  _c()
+export function createElementVNode(vm, tag, data, ...children) {
+  if (data == null) {
+    data = {}
+  }
+  let key = data.key;
+  if (key) {
+    delete data.key
+  }
+  return vnode(vm, tag, key, data, children);
+}
+// _v()
+export function createTextVNode(vm, text) {
+  return vnode(vm, undefined, undefined, undefined, undefined, text);
+}
+
+// ast一样吗？ ast做的是语法层面的转化 他描述的是语法本身 (可以描述js css html)
+// 我们的虚拟dom 是描述的dom元素，可以增加一些自定义属性  (描述dom的)
+function vnode(vm, tag, key, data, children, text) {
+  return {
+    vm,
+    tag,
+    key,
+    data,
+    children,
+    text
+    // ....
+  }
+}
+```
+
+调用 `vm._render()` 就可以生成虚拟dom.
+
 ## 5. 虚拟dom转为真实dom
+
+#### 5.1 vm._render 更新dom
+
+在lifecycleMixin中，定义vm._render 接收虚拟dom:
+
+```js
++import { patch } from '../vdom/patch';
+
++export function lifecycleMixin(Vue) {
++  Vue.prototype._update = function (vnode) { // 将vnode转化成真实dom
++    console.log('_update', vnode);
+
++    const vm = this;
++    const el = vm.$el;
+
+    // patch既有初始化的功能，又有更新 
++    vm.$el = patch(el, vnode);
++  }
++}
+
+export function mountComponent(vm, el) { // 这里的el 是通过querySelector处理过的
+  vm.$el = el;
+
+  // 1.调用render方法产生虚拟节点虚拟DOM
+  // 2.根据虚拟DOM产生真实DOM，插入el元素中
+  vm._update(vm._render()); // vm.$options.render() 虚拟节点
+}
+```
+
+#### 5.2 patch 生成真实dom
+
+patch既有初始化生成真实dom的功能，又有更新的功能；patch 中dom-diff后续再讲，这里先讲初渲染流程生成真实dom。
+
+src/core/vdom/patch.js
+
+```js
+function createElm(vnode) {
+  let {
+    tag,
+    data,
+    children,
+    text
+  } = vnode;
+  if (typeof tag === 'string') { // 标签
+    vnode.el = document.createElement(tag); // 这里将真实节点和虚拟节点对应起来，后续如果修改属性了
+    patchProps(vnode.el, data);
+    children.forEach(child => {
+      vnode.el.appendChild(createElm(child))
+    });
+  } else {
+    vnode.el = document.createTextNode(text)
+  }
+  return vnode.el
+}
+
+function patchProps(el, props) {
+  for (let key in props) {
+    if (key === 'style') { // style{color:'red'}
+      for (let styleName in props.style) {
+        el.style[styleName] = props.style[styleName];
+      }
+    } else {
+      el.setAttribute(key, props[key]);
+    }
+  }
+}
+
+export function patch(oldVNode, vnode) {
+  // 写的是初渲染流程 
+  const isRealElement = oldVNode.nodeType;
+  if (isRealElement) {
+    const elm = oldVNode; // 获取真实元素
+    const parentElm = elm.parentNode; // 拿到父元素
+    let newElm = createElm(vnode);
+    parentElm.insertBefore(newElm, elm.nextSibling);
+    parentElm.removeChild(elm); // 删除老节点
+
+    return newElm
+  } else {
+    // diff算法
+  }
+}
+```
+
+#### 5.3 手动更新视图
+
+有了vm._update和vm._render后，可以手动更新视图了。
+
+```html
+<div id="app" style="color:red;background:yellow">
+  <div style="color:green" key="123">
+    {{ name }} hello {{age}}
+  </div>
+  <li> world </li>
+</div>
+<script src="vue.js"></script>
+<script>
+  const vm = new Vue({
+    data: {
+      name: 'xiaoming',
+      age: 20,
+    },
+    // template:'<div>hello</div>'
+    el: '#app', // 将数据解析到el元素上
+  });
+
+  // 手动更新视图
+  setTimeout(() => {
+    vm.name = 'xiaohu';
+    vm.age = 28
+    vm._update(vm._render()); // 重新根据数据渲染出一个虚拟dom
+  }, 2000);
+</script>
+```
+
+2s后通过手动代码`vm._update(vm._render())`触发，就可以更新视图；后续属性和我们的视图关联起来，就可以做到数据变化可以自动更新视图。

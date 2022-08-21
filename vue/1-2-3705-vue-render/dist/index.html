@@ -33,6 +33,13 @@
     // 3.核心就是我们需要将模板变成我们的js语法， 通过js语法生成虚拟DOM
 
     // 需要先变成语法树在重新组装代码成为新的语法  将template语法转换成render函数
+
+    // 手动更新视图
+    setTimeout(() => {
+      vm.name = 'xiaohu';
+      vm.age = 28
+      vm._update(vm._render()); // 重新根据数据渲染出一个虚拟dom
+    }, 2000);
   </script>
 </body>
 

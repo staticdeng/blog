@@ -211,7 +211,195 @@ class Dep {
 }
 ```
 
-## 2.异步更新原理nextTick
+## 2.异步更新与nextTick原理
 
-## 3.mixin的实现原理
+```js
+const vm = new Vue({
+  data: {
+    name: 'xiaoming',
+    age: 20,
+  },
+  el: '#app',
+});
 
+// 自动更新视图
+setTimeout(() => {
+  vm.age = 28;
+  vm.age = 29;
+  vm.age = 30;
+}, 2000);
+```
+
+上面例子中多次更新属性age，会触发多次更新视图，性能浪费。
+
+遇到这种情况，如何处理呢？
+
+* 多次执行需要合并为一次，弄个变量开个异步 (任务放入缓存队列，弄个变量防抖，开个异步执行缓存队列任务)
+
+这样同步代码执行完，异步更新就只需一次了
+
+#### 2.1 缓存watcher, 异步更新
+
+多次更新，把watcher缓存起来，等同步执行后再执行异步更新
+
+src/core/observer/watcher.js
+
+```js
++import { queueWatcher } from './scheduler';
+class Watcher {
+  ...
+  update() {
+-   // this.get();
++   queueWatcher(this); // 把当前的watcher 暂存起来
+  }
+
++ run() {
++   this.get(); // 缓存起来，异步更新队列只会执行一次，不再多次渲染了
++ }
+}
+```
+
+src/core/observer/scheduler.js
+
+```js
+let queue = []; // 队列
+let has = {}; // 去重
+let waiting = false; // 防抖
+
+// 执行缓存队列
+function flushSchedulerQueue() {
+  let flushQueue = queue.slice(0);
+  queue = [];
+  has = {};
+  waiting = false;
+  flushQueue.forEach(q => q.run()); // 在刷新的过程中可能还有新的watcher，重新放到queue中
+}
+
+export function queueWatcher(watcher) {
+  const id = watcher.id;
+  if (!has[id]) { // 去重watcher
+      has[id] = true;
+      queue.push(watcher); // 缓存watcher
+      // 不管我们的update执行多少次，但是最终只执行一轮刷新操作
+      if (!waiting) {
+        setTimeout(flushSchedulerQueue, 0);
+        waiting = true;
+      }
+  }
+}
+```
+
+这样把watcher缓存起来，异步更新队列只会执行一次watcher渲染，不会多次渲染了
+
+#### 2.2 nextTick原理
+
+nextTick 和上面逻辑类似，也是多个nextTick的回调任务执行合并为一次执行
+
+* 多次任务执行合并为一次：任务加入队列，弄个变量加个异步
+
+src/core/util/next-tick.js
+
+将多次任务执行合并为一次执行抽离：
+
+```js
+let callbacks = [];
+let waiting = false;
+
+function flushCallbacks() {
+  let cbs = callbacks.slice(0);
+  waiting = false;
+  callbacks = [];
+  cbs.forEach(cb => cb()); // 按照顺序依次执行
+}
+
+export function nextTick(cb) { // 先内部还是先用户的？
+  callbacks.push(cb); // 维护nextTick中的cakllback方法
+  if (!waiting) {
+    Promise.resolve().then(flushCallbacks);
+    waiting = true;
+  }
+}
+```
+
+queueWatcher使用nextTick：
+
+src/core/observer/scheduler.js
+
+```js
++import { nextTick } from '../util/next-tick';
+
+let queue = []; // 队列
+let has = {}; // 去重
+-let waiting = false; // 防抖
+
+// 执行缓存队列
+function flushSchedulerQueue() {
+  let flushQueue = queue.slice(0);
+  queue = [];
+  has = {};
+- waiting = false;
+  flushQueue.forEach(q => q.run()); // 在刷新的过程中可能还有新的watcher，重新放到queue中
+}
+
+export function queueWatcher(watcher) {
+  const id = watcher.id;
+  if (!has[id]) { // 去重watcher
+    has[id] = true;
+    queue.push(watcher); // 缓存watcher
+    // 不管我们的update执行多少次，但是最终只执行一轮刷新操作
+-   if (!waiting) {
+-    setTimeout(flushSchedulerQueue, 0);
+-     waiting = true;
+-   }
+
++   nextTick(flushSchedulerQueue);
+  }
+}
+```
+
+在组件中使用nextTick:
+
+src/core/instance/index.js
+
+```js
+import { initMixin } from './init';
+import { lifecycleMixin } from './lifecycle';
+import { renderMixin } from './render';
++import { nextTick } from '../util/next-tick';
+
+// 避免将所有的方法都耦合在一起，使用构造函数的方式，不使用类的方式
+function Vue(options) { 
+  // options就是用户的选项
+  this._init(options); // 默认就调用了init
+}
+
++Vue.prototype.$nextTick = nextTick;
+
+initMixin(Vue);
+lifecycleMixin(Vue);
+renderMixin(Vue);
+
+export default Vue;
+```
+
+组件中使用$nextTick:
+
+```js
+const vm = new Vue({
+  data: {
+    name: 'xiaoming',
+    age: 20,
+  },
+  el: '#app',
+});
+
+vm.age = 30;
+console.log('获取不到新的dom', app.innerHTML);
+
+// nextTick不是创建了一个异步任务，而是将这个任务维护到了队列中而已 
+vm.$nextTick(()=>{
+  console.log('获取到新的dom', app.innerHTML);
+});
+```
+
+* 所以，vue组件中nextTick不是创建了一个异步任务，而是将这个任务维护到了队列中而已

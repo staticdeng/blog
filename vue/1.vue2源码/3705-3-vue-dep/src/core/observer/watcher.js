@@ -3,6 +3,8 @@
  * https://github.com/vuejs/vue/blob/2.6/src/core/observer/watcher.js
  */
 import Dep from './dep';
+import { queueWatcher } from './scheduler';
+
 let id = 0;
 
 /**
@@ -32,6 +34,13 @@ class Watcher {
   }
 
   update() {
+    // this.get();
+    // console.log('update');
+    queueWatcher(this); // 把当前的watcher 暂存起来
+  }
+
+  run() {
+    // console.log('run');
     this.get(); // 重新渲染
   }
 

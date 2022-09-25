@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app" style="color:red;background:yellow">
+    <div style="color:green" key="123">
+      {{ name }} {{age}} {{ age }}
+    </div>
+    <li> world </li>
+  </div>
+  <script src="vue.js"></script>
+  <script>
+    const vm = new Vue({
+      data: {
+        name: 'xiaoming',
+        age: 20,
+      },
+      el: '#app',
+    });
+
+    vm.age = 30;
+    console.log('获取不到新的dom', app.innerHTML);
+
+    // nextTick不是创建了一个异步任务，而是将这个任务维护到了队列中而已 
+    vm.$nextTick(()=>{
+      console.log('获取到新的dom', app.innerHTML); // 同步获取
+    });
+  </script>
+</body>
+
+</html>

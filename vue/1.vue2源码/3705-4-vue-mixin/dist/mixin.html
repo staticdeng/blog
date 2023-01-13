@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app" style="color:red;background:yellow">
+
+  </div>
+  <script src="vue.js"></script>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
+  <script>
+    // 1. Vue.options = {}  {created(){}}
+    Vue.mixin({
+      created() {
+        console.log('mixin1-created')
+      },
+    })
+    //  2 Vue.options = {created:[fn]}  {created(){}}
+    Vue.mixin({
+      created() {
+        console.log('mixin2-created')
+      },
+    })
+    Vue.mixin({
+      created() {
+        console.log('mixin3-created')
+      },
+    })
+    Vue.mixin({
+      mounted() {
+        console.log('mixin1-mounted')
+      },
+    })
+    // 发布订阅  -》  订阅
+    console.log('Vue.options =>', Vue.options)
+
+    // 内部会将多个created 合并成一个队列 依次执行 
+    const vm = new Vue({
+      // Vue.options = {created:[fn,fn]}  {created:fn(){}}
+      created() {
+        console.log('created')
+      }
+    });
+
+    // vue.mixin 混合 可以混入一些公共方法
+
+  </script>
+</body>
+
+</html>

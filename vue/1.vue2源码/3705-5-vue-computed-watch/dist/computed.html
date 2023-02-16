@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    {{fullname}} {{fullname}}
+  </div>
+  <script src="vue.js"></script>
+  <!-- <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.14/vue.js"></script> -->
+  <script>
+    // 1.计算属性原理
+    // 2.watch实现原理
+    // 3.数组响应式原理
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        firstname: 'xiao',
+        lastname: 'ming',
+        age: 20,
+      },
+      // 计算属性就是一个defineProperty
+      // 计算属性依赖的值发生变化才会重新执行用户的方法；计算属性中要维护一个dirty属性，默认计算属性不会立刻执行，当模板中使用的时候才会执行计算属性的getter
+      // 计算属性也是一个watcher，默认渲染会创造一个渲染watcher
+      // 底层就是一个带有dirty属性的watcher
+      computed: {
+        // 写法1
+        fullname() { // defineProperty中的get方法
+          console.log('computed =>', 'fullname getter'); // computed 有缓存，模板多次调用只会执行一次该日志
+          return this.firstname + this.lastname
+        },
+        // 写法2
+        fullname2: {
+          get(){
+            console.log('computed =>', 'fullname2 getter');
+            return this.firstname + this.lastname
+          },
+          set(newVal){
+            console.log(newVal)
+          }
+        }
+      }
+    });
+
+    setTimeout(() => {
+      vm.lastname = 'hu'; // 会执行什么？ 执行计算属性watcher更新操作  dirty = true;
+    }, 1000);
+  </script>
+</body>
+
+</html>

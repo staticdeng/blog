@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug webpack",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd":"${workspaceFolder}",
+            "program": "${workspaceFolder}/debugger.js"
+        }
+    ]
+}

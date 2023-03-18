@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app" style="color:red;background:yellow">
+    <div style="color:green" key="123">
+      {{ name }} {{age}} {{ age }}
+    </div>
+    <li> world </li>
+  </div>
+  <script src="vue.js"></script>
+  <script>
+    const vm = new Vue({
+      data: {
+        name: 'xiaoming',
+        age: 20,
+      },
+      // template:'<div>hello</div>'
+      el: '#app', // 将数据解析到el元素上
+    });
+    // vm.$mount('#app');
+
+    // ------------------------ vue模版编译和虚拟dom原理 -------------------
+    // 将vue数据渲染到视图中：
+    // 1.使用模板引擎：需要正则匹配替换；1.0的时候，没有引入虚拟DOM的改变，每次拿到模板引擎进行数据替换，性能差 
+    // 2.vue2 采用虚拟DOM， 数据变化后比较虚拟DOM的差异，最后更新需要更新的地方
+    // 3.核心就是我们需要将模板变成我们的js语法， 通过js语法生成虚拟DOM
+
+    // 需要先变成语法树在重新组装代码成为新的语法  将template语法转换成render函数
+
+    /*
+    // 手动更新视图
+    setTimeout(() => {
+      vm.name = 'xiaohu';
+      vm.age = 28
+      vm._update(vm._render()); // 重新根据数据渲染出一个虚拟dom
+    }, 2000);
+    */
+
+    // ------------------------ vue依赖收集原理 -------------------
+
+    // 自动更新视图
+    setTimeout(() => {
+      vm.name = 'xiaohu';
+      vm.age = 28;
+    }, 2000);
+  </script>
+</body>
+
+</html>

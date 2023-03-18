@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script src="vue.js"></script>
+  <script>
+    // 响应式的数据变化， 数据变化了我可以监控到数据的变化
+    // 数据的取值和更改值我们要监控到
+    const vm = new Vue({
+      data: {
+        name: 'xiaoming',
+        address: {
+          num: 30,
+        },
+        arr: [1, { a: 1 }],
+      }
+    });
+
+    vm._data.name = 'xiaohu'; // 数据代理，下面直接vm.name
+    vm.name = 'xiaohu'; // 修改触发set
+    // 设置值为新的Object也要进行新Object的劫持
+    vm.address = {
+      num: 20
+    }
+
+    // 修改数组都是通过方法来修改，push shift...
+    vm.arr.push({ a: 2 }); // push新增的内容再次进行观测
+
+    console.log(vm); // 查看控制台，所有属性都被监听劫持有get和set
+  </script>
+</body>
+
+</html>

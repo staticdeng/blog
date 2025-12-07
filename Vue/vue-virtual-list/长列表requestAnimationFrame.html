@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="container"></div>
+
+  <script>
+    let list = [];
+    var container = document.getElementById('container');
+    for (let i = 0; i< 100000; i ++) {
+      list.push({ index: i });
+    }
+
+    // 对数据分组切片
+    let chunkList = [];
+    // for (let i = 0; i < list.length; i += 100) {
+    //   chunkList.push(list.slice(i, i + 100));
+    // }
+    // 对数据分组切片方法二
+    let i = 0;
+    while (i < list.length) {
+      chunkList.push(list.slice(i, i + 100));
+      i += 100;
+    }
+
+    function render1() {
+      for (let i =0; i < chunkList.length; i++) {
+        // 分片渲染加上计时器
+        setTimeout(() => {
+          const chunk = chunkList[i]
+          for (let j =0; j<chunk.length; j++) {
+            let li = document.createElement('li');
+            li.innerHTML = chunk[j].index;
+            container.appendChild(li);
+          }
+        }, 0);
+      }
+    }    
+    // render1();
+
+    function render2() {
+      let currentIndex = 0; // 记录当前处理到哪个分片
+      function renderChunk() {
+        if (currentIndex < chunkList.length) {
+          const chunk = chunkList[currentIndex];
+          for (let j = 0; j < chunk.length; j++) {
+            const li = document.createElement('li');
+            li.innerHTML = chunk[j].index; // 用 textContent 更安全
+            container.appendChild(li);
+          }
+
+          // 关键！只安排下一次渲染，不重复安排所有分片
+          // 这里requestAnimationFrame 不能使用for或者while，只能只用递归
+          requestAnimationFrame(renderChunk);
+          currentIndex++;
+        }
+      }
+      // 开始渲染
+      renderChunk();
+    }
+    render2();
+  </script>
+</body>
+</html>
